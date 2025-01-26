@@ -168,6 +168,12 @@ class PostController extends ActionController
             : $this->postRepository->findAllWithLimit($maximumItems);
         $pagination = $this->getPagination($posts, $currentPage);
 
+        if($currentPage > 1) {
+            $page = $GLOBALS['TSFE']->page;
+            $title = $page['title'] . ' ' . LocalizationUtility::translate('pagination.page', 'blog') . ' ' . $currentPage;
+            MetaTagService::set(MetaTagService::META_TITLE, (string) $title);
+        }
+
         $this->view->assign('type', 'recent');
         $this->view->assign('posts', $posts);
         $this->view->assign('pagination', $pagination);
