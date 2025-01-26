@@ -216,7 +216,7 @@ class PostController extends ActionController
             $this->view->assign('timestamp', $dateTime->getTimestamp());
             $this->view->assign('posts', $posts);
             $this->view->assign('pagination', $pagination);
-            $title = str_replace([
+            $title = preg_replace('/\s+/', ' ', str_replace([
                 '###MONTH###',
                 '###MONTH_NAME###',
                 '###YEAR###',
@@ -224,9 +224,15 @@ class PostController extends ActionController
                 $month,
                 $month !== null ? $dateTime->format('F') : null,
                 $year,
-            ], LocalizationUtility::translate('meta.title.listPostsByDate', 'blog'));
+            ], LocalizationUtility::translate('meta.title.listPostsByDate', 'blog')));
             MetaTagService::set(MetaTagService::META_TITLE, (string) $title);
-            MetaTagService::set(MetaTagService::META_DESCRIPTION, (string) LocalizationUtility::translate('meta.description.listPostsByDate', 'blog'));
+            MetaTagService::set(MetaTagService::META_DESCRIPTION, (string)
+                str_replace(
+                    '###ALL_BLOG_POSTS###',
+                    $title,
+                    LocalizationUtility::translate('meta.description.listPostsByDate', 'blog')
+                )
+            );
         }
     }
 

@@ -152,7 +152,7 @@
                 <source>All blog posts in ###MONTH_NAME### ###YEAR###</source>
             </trans-unit>
             <trans-unit id="meta.description.listPostsByDate" xml:space="preserve">
-                <source>All blog posts ordered by date</source>
+                <source>###ALL_BLOG_POSTS### ordered by date</source>
             </trans-unit>
 
             <!-- Author -->
