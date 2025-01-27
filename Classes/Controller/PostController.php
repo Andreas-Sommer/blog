@@ -169,8 +169,8 @@ class PostController extends ActionController
         $pagination = $this->getPagination($posts, $currentPage);
 
         $page = $this->getTypoScriptFontendController()->page;
-        $this->setPageTitle($page['title'], $currentPage);
-        $this->setPageDescription($page['description'], $currentPage);
+        $this->setPageTitle((string) $page['title'], $currentPage);
+        $this->setPageDescription((string) $page['description'], $currentPage);
 
         $this->view->assign('type', 'recent');
         $this->view->assign('posts', $posts);
@@ -235,8 +235,8 @@ class PostController extends ActionController
                 LocalizationUtility::translate('meta.description.listPostsByDate', 'blog')
             );
 
-            $this->setPageTitle($title, $currentPage);
-            $this->setPageDescription($description, $currentPage);
+            $this->setPageTitle((string) $title, $currentPage);
+            $this->setPageDescription((string) $description, $currentPage);
         }
     }
 
