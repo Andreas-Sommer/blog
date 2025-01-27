@@ -168,11 +168,9 @@ class PostController extends ActionController
             : $this->postRepository->findAllWithLimit($maximumItems);
         $pagination = $this->getPagination($posts, $currentPage);
 
-        if($currentPage > 1) {
-            $page = $GLOBALS['TSFE']->page;
-            $title = $page['title'] . ' ' . LocalizationUtility::translate('pagination.page', 'blog') . ' ' . $currentPage;
-            MetaTagService::set(MetaTagService::META_TITLE, (string) $title);
-        }
+        $page = $this->getTypoScriptFontendController()->page;
+        $this->setPageTitle($page['title'], $currentPage);
+        $this->setPageDescription($page['description'], $currentPage);
 
         $this->view->assign('type', 'recent');
         $this->view->assign('posts', $posts);
@@ -231,14 +229,14 @@ class PostController extends ActionController
                 $month !== null ? $dateTime->format('F') : null,
                 $year,
             ], LocalizationUtility::translate('meta.title.listPostsByDate', 'blog')));
-            MetaTagService::set(MetaTagService::META_TITLE, (string) $title);
-            MetaTagService::set(MetaTagService::META_DESCRIPTION, (string)
-                str_replace(
-                    '###ALL_BLOG_POSTS###',
-                    $title,
-                    LocalizationUtility::translate('meta.description.listPostsByDate', 'blog')
-                )
+            $description = str_replace(
+                '###ALL_BLOG_POSTS###',
+                $title,
+                LocalizationUtility::translate('meta.description.listPostsByDate', 'blog')
             );
+
+            $this->setPageTitle($title, $currentPage);
+            $this->setPageDescription($description, $currentPage);
         }
     }
 
@@ -266,8 +264,8 @@ class PostController extends ActionController
             $this->view->assign('posts', $posts);
             $this->view->assign('pagination', $pagination);
             $this->view->assign('category', $category);
-            MetaTagService::set(MetaTagService::META_TITLE, (string) $category->getTitle());
-            MetaTagService::set(MetaTagService::META_DESCRIPTION, (string) $category->getDescription());
+            $this->setPageTitle((string) $category->getTitle(), $currentPage);
+            $this->setPageDescription((string) $category->getDescription(), $currentPage);
         } else {
             $this->view->assign('categories', $this->categoryRepository->findAll());
         }
@@ -285,8 +283,8 @@ class PostController extends ActionController
             $this->view->assign('posts', $posts);
             $this->view->assign('pagination', $pagination);
             $this->view->assign('author', $author);
-            MetaTagService::set(MetaTagService::META_TITLE, (string) $author->getName());
-            MetaTagService::set(MetaTagService::META_DESCRIPTION, (string) $author->getBio());
+            $this->setPageTitle((string) $author->getName(), $currentPage);
+            $this->setPageDescription((string) $author->getBio(), $currentPage);
         } else {
             $this->view->assign('authors', $this->authorRepository->findAll());
         }
@@ -304,8 +302,8 @@ class PostController extends ActionController
             $this->view->assign('posts', $posts);
             $this->view->assign('pagination', $pagination);
             $this->view->assign('tag', $tag);
-            MetaTagService::set(MetaTagService::META_TITLE, (string) $tag->getTitle());
-            MetaTagService::set(MetaTagService::META_DESCRIPTION, (string) $tag->getDescription());
+            $this->setPageTitle((string) $tag->getTitle(), $currentPage);
+            $this->setPageDescription((string) $tag->getDescription(), $currentPage);
         } else {
             $this->view->assign('tags', $this->tagRepository->findAll());
         }
@@ -419,5 +417,22 @@ class PostController extends ActionController
 
         $paginator = new QueryResultPaginator($objects, $currentPage, $itemsPerPage);
         return new BlogPagination($paginator, $maximumNumberOfLinks);
+    }
+
+    protected function setPageTitle(string $title, int $currentPage): void
+    {
+        if($currentPage > 1)
+        {
+            $title .= ' ' . LocalizationUtility::translate('pagination.page', 'blog') . ' ' . $currentPage;
+        }
+        MetaTagService::set(MetaTagService::META_TITLE, $title);
+    }
+
+    protected function setPageDescription(string $description, int $currentPage): void
+    {
+        if($currentPage > 1) {
+            $description .= ' ' . LocalizationUtility::translate('pagination.page', 'blog') . ' ' . $currentPage;
+        }
+        MetaTagService::set(MetaTagService::META_DESCRIPTION, $description);
     }
 }
